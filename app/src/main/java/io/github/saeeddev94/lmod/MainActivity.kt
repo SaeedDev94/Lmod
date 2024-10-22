@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Features(modifier: Modifier = Modifier) {
     Text(
-        text = "Trebuchet Launcher Double Tap to Sleep",
+        text = "Trebuchet Launcher Double Tap to Sleep\nOTP Extractor",
         modifier = modifier
     )
 }
