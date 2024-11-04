@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.devtools.ksp)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -11,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "io.github.saeeddev94.lmod"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 14
         versionName = "2.1.0"
 
