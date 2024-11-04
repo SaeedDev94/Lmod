@@ -4,10 +4,14 @@ class OtpExtractor {
     companion object {
         fun extract(text: String): String? {
             return match(text, listOf("code")) ?:
+              match(text, listOf("رمز")) ?:
+              match(text, listOf("مصرف\\(پويا\\)")) ?:
               match(text, listOf("رمز", "پویا")) ?:
               match(text, listOf("عدد", "محرمانه")) ?:
               match(text, listOf("کد", "ورود")) ?:
-              match(text, listOf("کد", "تایید", "شما"))
+              match(text, listOf("کد", "تایید", "شما")) ?:
+              match(text, listOf("رمز", "یکبار", "مصرف")) ?:
+              match(text, listOf("برداشت", "از", "حساب", "شما"))
         }
 
         private fun regex(list: List<String>): Regex {
