@@ -3,5 +3,6 @@
     <string-array name="xposed_scope">
         <item>com.android.launcher3</item>
         <item>com.simplemobiletools.smsmessenger</item>
+        <item>org.lineageos.jelly</item>
     </string-array>
 </resources>
