@@ -71,19 +71,20 @@ class HookEntry : IYukiHookXposedInit {
                 }.hook {
                     replaceAny {
                         val ref = instance::class.java
-                        val activityField = ref.getDeclaredField("activity")
-                        val incognitoField = ref.getDeclaredField("incognito")
-                        activityField.isAccessible = true
-                        incognitoField.isAccessible = true
-                        val activity = activityField.get(instance) as Context
-                        val incognito = incognitoField.get(instance) as Boolean
+                        val activity = ref.getDeclaredField("activity")
+                        val incognito = ref.getDeclaredField("incognito")
+                        activity.isAccessible = true
+                        incognito.isAccessible = true
 
                         val view = args[0] as WebView
                         val isDialog = args[1] as Boolean
                         val isUserGesture = args[2] as Boolean
                         val resultMsg = args[3] as Message
 
-                        ChromeClient(activity, incognito).onCreateWindow(view, isDialog, isUserGesture, resultMsg)
+                        ChromeClient(
+                            activity.get(instance) as Context,
+                            incognito.get(instance) as Boolean,
+                        ).onCreateWindow(view, isDialog, isUserGesture, resultMsg)
                     }
                 }
             }
