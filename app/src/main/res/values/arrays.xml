@@ -4,5 +4,6 @@
         <item>com.android.launcher3</item>
         <item>com.simplemobiletools.smsmessenger</item>
         <item>org.lineageos.jelly</item>
+        <item>com.android.systemui</item>
     </string-array>
 </resources>
