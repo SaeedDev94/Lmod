@@ -20,7 +20,6 @@ class ChromeClient(
         tempWebView.webViewClient = object : WebViewClient() {
             override fun onLoadResource(view: WebView, url: String) {
                 tempWebView.destroy()
-                view.loadUrl(url)
                 val intent = Intent().apply {
                     setClassName("org.lineageos.jelly", "org.lineageos.jelly.MainActivity")
                     data = Uri.parse(url)
