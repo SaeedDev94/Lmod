@@ -15,9 +15,13 @@ import com.topjohnwu.superuser.Shell
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.TimeZone
 
 @InjectYukiHookWithXposed
 class HookEntry : IYukiHookXposedInit {
+
+    private val timeZoneId: String = "Asia/Tehran"
 
     override fun onInit() = configs {
         isDebug = false
@@ -105,7 +109,7 @@ class HookEntry : IYukiHookXposedInit {
                     name = "getDefault"
                 }.hook {
                     replaceAny {
-                        java.util.TimeZone.getTimeZone("Asia/Tehran")
+                        TimeZone.getTimeZone(timeZoneId)
                     }
                 }
             }
@@ -116,8 +120,21 @@ class HookEntry : IYukiHookXposedInit {
                 }.hook {
                     after {
                         val statusBarClock = instance as TextView
-                        val dateTime = ZonedDateTime.now(ZoneId.of("Asia/Tehran"))
+                        val dateTime = ZonedDateTime.now(ZoneId.of(timeZoneId))
                         statusBarClock.text = dateTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+                    }
+                }
+            }
+        }
+
+        loadApp(name = "com.android.deskclock") {
+            "java.util.Calendar".toClassOrNull()?.apply {
+                method {
+                    name = "getInstance"
+                }.hook {
+                    after {
+                        val calendar = result as Calendar
+                        calendar.timeZone = TimeZone.getTimeZone(timeZoneId)
                     }
                 }
             }
