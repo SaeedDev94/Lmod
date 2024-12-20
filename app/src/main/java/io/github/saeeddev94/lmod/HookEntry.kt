@@ -1,10 +1,13 @@
 package io.github.saeeddev94.lmod
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Message
 import android.provider.Telephony
+import android.view.ViewGroup
 import android.webkit.WebView
+import android.widget.ScrollView
 import android.widget.TextView
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.configs
@@ -98,6 +101,28 @@ class HookEntry : IYukiHookXposedInit {
                             activity.get(instance) as Context,
                             incognito.get(instance) as Boolean,
                         ).onCreateWindow(view, isDialog, isUserGesture, resultMsg)
+                    }
+                }
+            }
+
+            "org.lineageos.jelly.MainActivity".toClassOrNull()?.apply {
+                method {
+                    name = "onCreate"
+                }.hook {
+                    after {
+                        val context = instance as Activity
+                        val viewGroup = context.window.decorView.findViewById<ViewGroup>(android.R.id.content)
+                        val layout = viewGroup.getChildAt(0)
+                        (layout.parent as ViewGroup).removeView(layout)
+                        val scrollView = ScrollView(context).apply {
+                            layoutParams = ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                            )
+                            isFillViewport = true
+                        }
+                        scrollView.addView(layout)
+                        context.setContentView(scrollView)
                     }
                 }
             }
