@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Message
 import android.provider.Telephony
 import android.view.ViewGroup
+import android.webkit.PermissionRequest
 import android.webkit.WebView
 import android.widget.ScrollView
 import android.widget.TextView
@@ -75,6 +76,24 @@ class HookEntry : IYukiHookXposedInit {
                             userAgent = userAgent.replace("; wv", "")
                             userAgent = userAgent.replace(Regex("\\s*Version/\\S+\\s*"), " ")
                             webSettings.userAgentString = userAgent
+                        }
+                    }
+                }
+            }
+
+            "android.webkit.WebChromeClient".toClassOrNull()?.apply {
+                method {
+                    name = "onPermissionRequest"
+                    param(PermissionRequest::class.java)
+                }.hook {
+                    replaceUnit {
+                        val request = args[0] as PermissionRequest
+                        val resources = request.resources
+                        for (resource in resources) {
+                            if (PermissionRequest.RESOURCE_PROTECTED_MEDIA_ID == resource) {
+                                request.grant(resources)
+                                return@replaceUnit
+                            }
                         }
                     }
                 }
