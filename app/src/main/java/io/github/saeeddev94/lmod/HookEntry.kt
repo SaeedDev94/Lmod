@@ -139,7 +139,7 @@ class HookEntry : IYukiHookXposedInit {
                 }.hook {
                     after {
                         val webView = instance as WebView
-                        val urlBarLayout = args[0] as ViewGroup
+                        val urlBarLayout = args[1] as ViewGroup
                         webView.addJavascriptInterface(JavaScriptInterface(urlBarLayout), JavaScriptInterface.JS_INTERFACE)
                     }
                 }
