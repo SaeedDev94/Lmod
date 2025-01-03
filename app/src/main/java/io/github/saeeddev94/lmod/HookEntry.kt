@@ -30,6 +30,19 @@ class HookEntry : IYukiHookXposedInit {
     }
 
     override fun onHook() = encase {
+        val newCalendar = {
+            "java.util.Calendar".toClassOrNull()?.apply {
+                method {
+                    name = "getInstance"
+                }.hook {
+                    after {
+                        val calendar = result as Calendar
+                        calendar.timeZone = TimeZone.getTimeZone(timeZoneId)
+                    }
+                }
+            }
+        }
+
         loadApp(name = "com.android.launcher3") {
             "com.android.launcher3.touch.WorkspaceTouchListener".toClassOrNull()?.apply {
                 method {
@@ -41,6 +54,7 @@ class HookEntry : IYukiHookXposedInit {
                     }
                 }
             }
+            newCalendar()
         }
 
         loadApp(name = "com.simplemobiletools.smsmessenger") {
@@ -171,16 +185,7 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         loadApp(name = "com.android.deskclock") {
-            "java.util.Calendar".toClassOrNull()?.apply {
-                method {
-                    name = "getInstance"
-                }.hook {
-                    after {
-                        val calendar = result as Calendar
-                        calendar.timeZone = TimeZone.getTimeZone(timeZoneId)
-                    }
-                }
-            }
+            newCalendar()
         }
     }
 
