@@ -2,11 +2,7 @@ package io.github.saeeddev94.lmod
 
 import android.content.Context
 import android.content.Intent
-import android.os.Message
 import android.provider.Telephony
-import android.view.ViewGroup
-import android.webkit.PermissionRequest
-import android.webkit.WebView
 import android.widget.TextView
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.configs
@@ -89,72 +85,6 @@ class HookEntry : IYukiHookXposedInit {
                             userAgent = userAgent.replace(Regex("\\s*Version/\\S+\\s*"), " ")
                             webSettings.userAgentString = userAgent
                         }
-                    }
-                }
-            }
-
-            "android.webkit.WebChromeClient".toClassOrNull()?.apply {
-                method {
-                    name = "onPermissionRequest"
-                    param(PermissionRequest::class.java)
-                }.hook {
-                    replaceUnit {
-                        val request = args[0] as PermissionRequest
-                        val resources = request.resources
-                        for (resource in resources) {
-                            if (PermissionRequest.RESOURCE_PROTECTED_MEDIA_ID == resource) {
-                                request.grant(resources)
-                                return@replaceUnit
-                            }
-                        }
-                    }
-                }
-            }
-
-            "org.lineageos.jelly.webview.ChromeClient".toClassOrNull()?.apply {
-                method {
-                    name = "onCreateWindow"
-                    param(WebView::class.java, Boolean::class.java, Boolean::class.java, Message::class.java)
-                }.hook {
-                    replaceAny {
-                        val ref = instance::class.java
-                        val activity = ref.getDeclaredField("activity")
-                        val incognito = ref.getDeclaredField("incognito")
-                        activity.isAccessible = true
-                        incognito.isAccessible = true
-
-                        val view = args[0] as WebView
-                        val isDialog = args[1] as Boolean
-                        val isUserGesture = args[2] as Boolean
-                        val resultMsg = args[3] as Message
-
-                        ChromeClient(
-                            activity.get(instance) as Context,
-                            incognito.get(instance) as Boolean,
-                        ).onCreateWindow(view, isDialog, isUserGesture, resultMsg)
-                    }
-                }
-            }
-
-            "org.lineageos.jelly.webview.WebClient".toClassOrNull()?.apply {
-                method {
-                    name = "onPageFinished"
-                }.hook {
-                    after {
-                        val webView = args[0] as WebView
-                        webView.evaluateJavascript(JavaScriptInterface.SYNC_URL_JS, null)
-                    }
-                }
-            }
-
-            "org.lineageos.jelly.webview.WebViewExt".toClassOrNull()?.apply {
-                method {
-                    name = "init"
-                }.hook {
-                    after {
-                        val webView = instance as WebView
-                        val urlBarLayout = args[1] as ViewGroup
-                        webView.addJavascriptInterface(JavaScriptInterface(urlBarLayout), JavaScriptInterface.JS_INTERFACE)
                     }
                 }
             }
