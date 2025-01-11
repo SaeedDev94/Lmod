@@ -53,6 +53,34 @@ class HookEntry : IYukiHookXposedInit {
             newCalendar()
         }
 
+        loadApp(name = "com.android.systemui") {
+            "java.util.TimeZone".toClassOrNull()?.apply {
+                method {
+                    name = "getDefault"
+                }.hook {
+                    replaceAny {
+                        TimeZone.getTimeZone(timeZoneId)
+                    }
+                }
+            }
+
+            "com.android.systemui.statusbar.policy.Clock".toClassOrNull()?.apply {
+                method {
+                    name = "updateClock"
+                }.hook {
+                    after {
+                        val statusBarClock = instance as TextView
+                        val dateTime = ZonedDateTime.now(ZoneId.of(timeZoneId))
+                        statusBarClock.text = dateTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+                    }
+                }
+            }
+        }
+
+        loadApp(name = "com.android.deskclock") {
+            newCalendar()
+        }
+
         loadApp(name = "com.simplemobiletools.smsmessenger") {
             "com.simplemobiletools.smsmessenger.receivers.SmsReceiver".toClassOrNull()?.apply {
                 method {
@@ -88,34 +116,6 @@ class HookEntry : IYukiHookXposedInit {
                     }
                 }
             }
-        }
-
-        loadApp(name = "com.android.systemui") {
-            "java.util.TimeZone".toClassOrNull()?.apply {
-                method {
-                    name = "getDefault"
-                }.hook {
-                    replaceAny {
-                        TimeZone.getTimeZone(timeZoneId)
-                    }
-                }
-            }
-
-            "com.android.systemui.statusbar.policy.Clock".toClassOrNull()?.apply {
-                method {
-                    name = "updateClock"
-                }.hook {
-                    after {
-                        val statusBarClock = instance as TextView
-                        val dateTime = ZonedDateTime.now(ZoneId.of(timeZoneId))
-                        statusBarClock.text = dateTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
-                    }
-                }
-            }
-        }
-
-        loadApp(name = "com.android.deskclock") {
-            newCalendar()
         }
     }
 
