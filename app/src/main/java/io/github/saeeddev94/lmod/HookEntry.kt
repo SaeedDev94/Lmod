@@ -99,24 +99,6 @@ class HookEntry : IYukiHookXposedInit {
                 }
             }
         }
-
-        loadApp(name = "org.lineageos.jelly") {
-            "android.webkit.WebView".toClassOrNull()?.apply {
-                method {
-                    name = "getSettings"
-                }.hook {
-                    after {
-                        val webSettings = result as android.webkit.WebSettings
-                        var userAgent = webSettings.userAgentString
-                        if (userAgent.contains("Version")) {
-                            userAgent = userAgent.replace("; wv", "")
-                            userAgent = userAgent.replace(Regex("\\s*Version/\\S+\\s*"), " ")
-                            webSettings.userAgentString = userAgent
-                        }
-                    }
-                }
-            }
-        }
     }
 
 }
