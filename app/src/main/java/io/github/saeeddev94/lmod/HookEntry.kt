@@ -26,6 +26,17 @@ class HookEntry : IYukiHookXposedInit {
     }
 
     override fun onHook() = encase {
+        val newTimeZone = {
+            "java.util.TimeZone".toClassOrNull()?.apply {
+                method {
+                    name = "getDefault"
+                }.hook {
+                    replaceAny {
+                        TimeZone.getTimeZone(timeZoneId)
+                    }
+                }
+            }
+        }
         val newCalendar = {
             "java.util.Calendar".toClassOrNull()?.apply {
                 method {
@@ -50,20 +61,11 @@ class HookEntry : IYukiHookXposedInit {
                     }
                 }
             }
+            newTimeZone()
             newCalendar()
         }
 
         loadApp(name = "com.android.systemui") {
-            "java.util.TimeZone".toClassOrNull()?.apply {
-                method {
-                    name = "getDefault"
-                }.hook {
-                    replaceAny {
-                        TimeZone.getTimeZone(timeZoneId)
-                    }
-                }
-            }
-
             "com.android.systemui.statusbar.policy.Clock".toClassOrNull()?.apply {
                 method {
                     name = "updateClock"
@@ -75,9 +77,12 @@ class HookEntry : IYukiHookXposedInit {
                     }
                 }
             }
+            newTimeZone()
+            newCalendar()
         }
 
         loadApp(name = "com.android.deskclock") {
+            newTimeZone()
             newCalendar()
         }
 

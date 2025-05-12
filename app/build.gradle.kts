@@ -7,14 +7,14 @@ plugins {
 
 android {
     namespace = "io.github.saeeddev94.lmod"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "io.github.saeeddev94.lmod"
         minSdk = 26
         targetSdk = 35
-        versionCode = 236
-        versionName = "6.2.0"
+        versionCode = 239
+        versionName = "6.3.0"
 
         vectorDrawables {
             useSupportLibrary = true
