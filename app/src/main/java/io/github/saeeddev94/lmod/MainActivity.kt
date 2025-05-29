@@ -1,17 +1,29 @@
 package io.github.saeeddev94.lmod
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import io.github.saeeddev94.lmod.ui.theme.LmodTheme
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
+import com.topjohnwu.superuser.Shell
+import io.github.saeeddev94.lmod.ui.LmodTheme
+import io.github.saeeddev94.lmod.ui.component.SelectDialog
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,9 +32,20 @@ class MainActivity : ComponentActivity() {
         setContent {
             LmodTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Features(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    Column(modifier = Modifier.fillMaxSize().padding(12.dp, 0.dp).verticalScroll(rememberScrollState())) {
+                        val rowModifier = Modifier.fillMaxSize().padding(0.dp, 12.dp, 0.dp, 0.dp)
+                        Row(modifier = rowModifier) {
+                            Button(
+                                { Shell.cmd("killall com.android.systemui").exec() },
+                                Modifier.padding(innerPadding),
+                            ) {
+                                Text("Restart SystemUI")
+                            }
+                        }
+                        Row(modifier = rowModifier) {
+                            BatteryIconScale(Modifier.padding(innerPadding))
+                        }
+                    }
                 }
             }
         }
@@ -30,17 +53,36 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Features(modifier: Modifier = Modifier) {
-    Text(
-        text = "Trebuchet Launcher Double Tap to Sleep\nOTP Extractor",
-        modifier = modifier
-    )
-}
+fun BatteryIconScale(modifier: Modifier) {
+    val context = LocalContext.current
+    val label = "Battery icon scale"
+    val suffix = "%"
+    val prefContext = remember { context.createDeviceProtectedStorageContext() }
+    val pref = remember { prefContext.getSharedPreferences(SharedPref.NAME, Context.MODE_PRIVATE) }
+    val options = remember { (0..100 step 5).toList().map { "$it" } }
+    val selected = remember {
+        val batteryScale =
+            pref.getFloat(SharedPref.BATTERY_ICON_SCALE_KEY, SharedPref.BATTERY_ICON_SCALE_DEFAULT)
+        val option = SharedPref.batteryScaleToOption(batteryScale)
+        val index = options.indexOf(option)
+        mutableIntStateOf(index)
+    }
+    val onOptionSelect = { index: Int ->
+        selected.intValue = index
+        val option = options[index]
+        val scale = SharedPref.optionToBatteryScale(option)
+        pref.edit { putFloat(SharedPref.BATTERY_ICON_SCALE_KEY, scale) }
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun FeaturesPreview() {
-    LmodTheme {
-        Features()
+    Column(
+        modifier = modifier.fillMaxSize(),
+    ) {
+        SelectDialog(
+            label,
+            options,
+            selected.intValue,
+            onOptionSelect,
+            suffix = suffix,
+        )
     }
 }

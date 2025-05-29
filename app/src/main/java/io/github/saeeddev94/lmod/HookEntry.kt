@@ -6,6 +6,7 @@ import android.provider.Telephony
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.crossbowffs.remotepreferences.RemotePreferences
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.configs
 import com.highcapable.yukihookapi.hook.factory.encase
@@ -20,6 +21,11 @@ import java.util.TimeZone
 
 @InjectYukiHookWithXposed
 class HookEntry : IYukiHookXposedInit {
+
+    companion object {
+        var batteryWidth = 0
+        var batteryHeight = 0
+    }
 
     private val timeZoneId: String = "Asia/Tehran"
 
@@ -51,6 +57,9 @@ class HookEntry : IYukiHookXposedInit {
                 }
             }
         }
+        val remotePref = { context: Context ->
+            RemotePreferences(context, SharedPref.PKG, SharedPref.NAME, true)
+        }
 
         loadApp(name = "com.android.launcher3") {
             "com.android.launcher3.touch.WorkspaceTouchListener".toClassOrNull()?.apply {
@@ -73,13 +82,19 @@ class HookEntry : IYukiHookXposedInit {
                     name = "scaleBatteryMeterViews"
                 }.hook {
                     after {
-                        val scale = 1.4F
+                        val sharedPref = remotePref(appContext!!)
+                        val scale = sharedPref.getFloat(
+                            SharedPref.BATTERY_ICON_SCALE_KEY,
+                            SharedPref.BATTERY_ICON_SCALE_DEFAULT
+                        )
                         val ref = instance::class.java
                         val icon = ref.getDeclaredField("mBatteryIconView")
                         icon.isAccessible = true
                         val battery = icon.get(instance) as ImageView
-                        val width = Math.round(battery.layoutParams.width * scale)
-                        val height = Math.round(battery.layoutParams.height * scale)
+                        if (batteryWidth == 0) batteryWidth = battery.layoutParams.width
+                        if (batteryHeight == 0) batteryHeight = battery.layoutParams.height
+                        val width = Math.round(batteryWidth * scale)
+                        val height = Math.round(batteryHeight * scale)
                         battery.layoutParams = LinearLayout.LayoutParams(width, height)
                     }
                 }

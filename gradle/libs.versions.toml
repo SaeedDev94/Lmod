@@ -1,11 +1,12 @@
 [versions]
-agp = "8.10.0"
+agp = "8.10.1"
 kotlin = "2.1.20"
 ksp = "2.1.20-2.0.1"
 coreKtx = "1.16.0"
 lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
-composeBom = "2025.05.00"
+composeBom = "2025.05.01"
+remotepreferences = "0.8"
 xposedApi = "82"
 yukihookapiApi = "1.2.1"
 yukihookapiKsp = "1.2.1"
@@ -20,6 +21,7 @@ androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+crossbowffs-remotepreferences = { group = "com.crossbowffs.remotepreferences", name = "remotepreferences", version.ref = "remotepreferences" }
 robv-xposed-api = { module = "de.robv.android.xposed:api", version.ref = "xposedApi" }
 highcapable-yukihookapi-api = { module = "com.highcapable.yukihookapi:api", version.ref = "yukihookapiApi" }
 highcapable-yukihookapi-ksp = { module = "com.highcapable.yukihookapi:ksp-xposed", version.ref = "yukihookapiKsp" }
