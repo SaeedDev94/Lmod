@@ -3,6 +3,8 @@ package io.github.saeeddev94.lmod
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.configs
@@ -66,6 +68,22 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         loadApp(name = "com.android.systemui") {
+            "com.android.systemui.battery.BatteryMeterView".toClassOrNull()?.apply {
+                method {
+                    name = "scaleBatteryMeterViews"
+                }.hook {
+                    after {
+                        val scale = 1.4F
+                        val ref = instance::class.java
+                        val icon = ref.getDeclaredField("mBatteryIconView")
+                        icon.isAccessible = true
+                        val battery = icon.get(instance) as ImageView
+                        val width = Math.round(battery.layoutParams.width * scale)
+                        val height = Math.round(battery.layoutParams.height * scale)
+                        battery.layoutParams = LinearLayout.LayoutParams(width, height)
+                    }
+                }
+            }
             "com.android.systemui.statusbar.policy.Clock".toClassOrNull()?.apply {
                 method {
                     name = "updateClock"
