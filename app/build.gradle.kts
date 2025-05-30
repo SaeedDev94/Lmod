@@ -13,8 +13,8 @@ android {
         applicationId = "io.github.saeeddev94.lmod"
         minSdk = 26
         targetSdk = 35
-        versionCode = 257
-        versionName = "6.3.2"
+        versionCode = 278
+        versionName = "6.4.0"
 
         vectorDrawables {
             useSupportLibrary = true

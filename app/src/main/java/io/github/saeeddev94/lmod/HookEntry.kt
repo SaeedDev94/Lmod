@@ -27,19 +27,43 @@ class HookEntry : IYukiHookXposedInit {
         var batteryHeight = 0
     }
 
-    private val timeZoneId: String = "Asia/Tehran"
-
     override fun onInit() = configs {
         isDebug = false
     }
 
     override fun onHook() = encase {
+        val remotePref = { context: Context ->
+            RemotePreferences(context, SharedPref.PKG, SharedPref.NAME, true)
+        }
+        val batteryScalePref = { context: Context ->
+            val sharedPref = remotePref(context)
+            sharedPref.getFloat(
+                SharedPref.BATTERY_ICON_SCALE_KEY,
+                SharedPref.BATTERY_ICON_SCALE_DEFAULT
+            )
+        }
+        val timeZonePref = { context: Context ->
+            if (context.packageName.equals("com.android.deskclock")) {
+                /**
+                 * TODO: Get time zone from app pref
+                 * For unknown reason, We can't access the app pref from the clock context!
+                 */
+                SharedPref.TIME_ZONE_DEFAULT
+            } else {
+                val sharedPref = remotePref(context)
+                sharedPref.getString(
+                    SharedPref.TIME_ZONE_KEY,
+                    SharedPref.TIME_ZONE_DEFAULT
+                )!!
+            }
+        }
         val newTimeZone = {
             "java.util.TimeZone".toClassOrNull()?.apply {
                 method {
                     name = "getDefault"
                 }.hook {
                     replaceAny {
+                        val timeZoneId = timeZonePref(appContext!!)
                         TimeZone.getTimeZone(timeZoneId)
                     }
                 }
@@ -51,14 +75,12 @@ class HookEntry : IYukiHookXposedInit {
                     name = "getInstance"
                 }.hook {
                     after {
+                        val timeZoneId = timeZonePref(appContext!!)
                         val calendar = result as Calendar
                         calendar.timeZone = TimeZone.getTimeZone(timeZoneId)
                     }
                 }
             }
-        }
-        val remotePref = { context: Context ->
-            RemotePreferences(context, SharedPref.PKG, SharedPref.NAME, true)
         }
 
         loadApp(name = "com.android.launcher3") {
@@ -82,11 +104,7 @@ class HookEntry : IYukiHookXposedInit {
                     name = "scaleBatteryMeterViews"
                 }.hook {
                     after {
-                        val sharedPref = remotePref(appContext!!)
-                        val scale = sharedPref.getFloat(
-                            SharedPref.BATTERY_ICON_SCALE_KEY,
-                            SharedPref.BATTERY_ICON_SCALE_DEFAULT
-                        )
+                        val scale = batteryScalePref(appContext!!)
                         val ref = instance::class.java
                         val icon = ref.getDeclaredField("mBatteryIconView")
                         icon.isAccessible = true
@@ -104,6 +122,7 @@ class HookEntry : IYukiHookXposedInit {
                     name = "updateClock"
                 }.hook {
                     after {
+                        val timeZoneId = timeZonePref(appContext!!)
                         val statusBarClock = instance as TextView
                         val dateTime = ZonedDateTime.now(ZoneId.of(timeZoneId))
                         statusBarClock.text = dateTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
@@ -136,6 +155,8 @@ class HookEntry : IYukiHookXposedInit {
                     }
                 }
             }
+            newTimeZone()
+            newCalendar()
         }
     }
 

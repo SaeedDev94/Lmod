@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,11 +24,11 @@ import androidx.core.content.edit
 import com.topjohnwu.superuser.Shell
 import io.github.saeeddev94.lmod.ui.LmodTheme
 import io.github.saeeddev94.lmod.ui.component.SelectDialog
+import java.util.TimeZone
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             LmodTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -62,6 +61,9 @@ class MainActivity : ComponentActivity() {
                         Row(modifier = rowModifier) {
                             BatteryIconScale(Modifier)
                         }
+                        Row(modifier = rowModifier) {
+                            TimeZone(Modifier)
+                        }
                     }
                 }
             }
@@ -92,7 +94,7 @@ fun BatteryIconScale(modifier: Modifier) {
     }
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxWidth(),
     ) {
         SelectDialog(
             label,
@@ -100,6 +102,37 @@ fun BatteryIconScale(modifier: Modifier) {
             selected.intValue,
             onOptionSelect,
             suffix = suffix,
+        )
+    }
+}
+
+@Composable
+fun TimeZone(modifier: Modifier) {
+    val context = LocalContext.current
+    val label = "Time zone"
+    val prefContext = remember { context.createDeviceProtectedStorageContext() }
+    val pref = remember { prefContext.getSharedPreferences(SharedPref.NAME, Context.MODE_PRIVATE) }
+    val options = remember { TimeZone.getAvailableIDs().toList() }
+    val selected = remember {
+        val option =
+            pref.getString(SharedPref.TIME_ZONE_KEY, SharedPref.TIME_ZONE_DEFAULT)!!
+        val index = options.indexOf(option)
+        mutableIntStateOf(index)
+    }
+    val onOptionSelect = { index: Int ->
+        selected.intValue = index
+        val option = options[index]
+        pref.edit { putString(SharedPref.TIME_ZONE_KEY, option) }
+    }
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        SelectDialog(
+            label,
+            options,
+            selected.intValue,
+            onOptionSelect,
         )
     }
 }
