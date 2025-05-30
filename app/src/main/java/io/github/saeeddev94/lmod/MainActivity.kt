@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -33,17 +34,33 @@ class MainActivity : ComponentActivity() {
             LmodTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(modifier = Modifier.fillMaxSize().padding(12.dp, 0.dp).verticalScroll(rememberScrollState())) {
-                        val rowModifier = Modifier.fillMaxSize().padding(0.dp, 12.dp, 0.dp, 0.dp)
+                        Text(
+                            "Restart",
+                            Modifier.fillMaxWidth().padding(0.dp, innerPadding.calculateTopPadding(), 0.dp, 0.dp)
+                        )
+                        val rowModifier = Modifier.fillMaxWidth().padding(0.dp, 12.dp, 0.dp, 0.dp)
                         Row(modifier = rowModifier) {
                             Button(
                                 { Shell.cmd("killall com.android.systemui").exec() },
-                                Modifier.padding(innerPadding),
+                                Modifier.padding(0.dp, 0.dp, 8.dp, 0.dp),
                             ) {
-                                Text("Restart SystemUI")
+                                Text("SystemUI")
+                            }
+                            Button(
+                                { Shell.cmd("killall com.android.launcher3").exec() },
+                                Modifier.padding(0.dp, 0.dp, 8.dp, 0.dp),
+                            ) {
+                                Text("Launcher")
+                            }
+                            Button(
+                                { Shell.cmd("killall com.android.deskclock").exec() },
+                                Modifier,
+                            ) {
+                                Text("Clock")
                             }
                         }
                         Row(modifier = rowModifier) {
-                            BatteryIconScale(Modifier.padding(innerPadding))
+                            BatteryIconScale(Modifier)
                         }
                     }
                 }

@@ -23,37 +23,27 @@ fun SelectDialog(
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
-    OutlinedButton(
-        onClick = { showDialog = true },
-        modifier = modifier.fillMaxWidth(),
-        colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = MaterialTheme.colorScheme.onSurface
-        )
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+    Column {
+        Text(label, Modifier.fillMaxWidth().padding(0.dp, 0.dp, 0.dp, 8.dp))
+        OutlinedButton(
+            onClick = { showDialog = true },
+            modifier = modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(0.dp, 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = "$prefix${options[selected]}$suffix",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                Text("$prefix${options[selected]}$suffix")
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "Select ringtone",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Select ringtone",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 
