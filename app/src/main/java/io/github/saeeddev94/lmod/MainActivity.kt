@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -27,15 +29,29 @@ import io.github.saeeddev94.lmod.ui.component.SelectDialog
 import java.util.TimeZone
 
 class MainActivity : ComponentActivity() {
+
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LmodTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Column(modifier = Modifier.fillMaxSize().padding(12.dp, 0.dp).verticalScroll(rememberScrollState())) {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    topBar = {
+                        TopAppBar(title = { Text("Lmod") })
+                    }
+                ) { innerPadding ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(12.dp, 0.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
                         Text(
                             "Restart",
-                            Modifier.fillMaxWidth().padding(0.dp, innerPadding.calculateTopPadding(), 0.dp, 0.dp)
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(0.dp, innerPadding.calculateTopPadding(), 0.dp, 0.dp)
                         )
                         val rowModifier = Modifier.fillMaxWidth().padding(0.dp, 12.dp, 0.dp, 0.dp)
                         Row(modifier = rowModifier) {
