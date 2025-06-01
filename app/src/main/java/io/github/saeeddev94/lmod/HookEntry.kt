@@ -155,8 +155,6 @@ class HookEntry : IYukiHookXposedInit {
                     }
                 }
             }
-            newTimeZone()
-            newCalendar()
         }
     }
 
