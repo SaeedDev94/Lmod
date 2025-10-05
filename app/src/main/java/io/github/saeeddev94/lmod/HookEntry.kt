@@ -138,8 +138,8 @@ class HookEntry : IYukiHookXposedInit {
             newCalendar()
         }
 
-        loadApp(name = "com.simplemobiletools.smsmessenger") {
-            "com.simplemobiletools.smsmessenger.receivers.SmsReceiver".toClassOrNull()?.apply {
+        loadApp(name = "org.fossify.messages") {
+            "org.fossify.messages.receivers.SmsReceiver".toClassOrNull()?.apply {
                 method {
                     name = "onReceive"
                     param(Context::class.java, Intent::class.java)
