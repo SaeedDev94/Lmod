@@ -75,50 +75,12 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         Row(modifier = rowModifier) {
-                            BatteryIconScale(Modifier)
-                        }
-                        Row(modifier = rowModifier) {
                             TimeZone(Modifier)
                         }
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun BatteryIconScale(modifier: Modifier) {
-    val context = LocalContext.current
-    val label = "Battery icon scale"
-    val suffix = "%"
-    val prefContext = remember { context.createDeviceProtectedStorageContext() }
-    val pref = remember { prefContext.getSharedPreferences(SharedPref.NAME, Context.MODE_PRIVATE) }
-    val options = remember { (0..100 step 5).toList().map { "$it" } }
-    val selected = remember {
-        val batteryScale =
-            pref.getFloat(SharedPref.BATTERY_ICON_SCALE_KEY, SharedPref.BATTERY_ICON_SCALE_DEFAULT)
-        val option = SharedPref.batteryScaleToOption(batteryScale)
-        val index = options.indexOf(option)
-        mutableIntStateOf(index)
-    }
-    val onOptionSelect = { index: Int ->
-        selected.intValue = index
-        val option = options[index]
-        val scale = SharedPref.optionToBatteryScale(option)
-        pref.edit { putFloat(SharedPref.BATTERY_ICON_SCALE_KEY, scale) }
-    }
-
-    Column(
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        SelectDialog(
-            label,
-            options,
-            selected.intValue,
-            onOptionSelect,
-            suffix = suffix,
-        )
     }
 }
 

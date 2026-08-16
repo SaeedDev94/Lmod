@@ -3,8 +3,6 @@ package io.github.saeeddev94.lmod
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import com.crossbowffs.remotepreferences.RemotePreferences
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
@@ -12,7 +10,6 @@ import com.highcapable.yukihookapi.hook.factory.configs
 import com.highcapable.yukihookapi.hook.factory.encase
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
-import com.topjohnwu.superuser.Shell
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -22,11 +19,6 @@ import java.util.TimeZone
 @InjectYukiHookWithXposed
 class HookEntry : IYukiHookXposedInit {
 
-    companion object {
-        var batteryWidth = 0
-        var batteryHeight = 0
-    }
-
     override fun onInit() = configs {
         isDebug = false
     }
@@ -34,13 +26,6 @@ class HookEntry : IYukiHookXposedInit {
     override fun onHook() = encase {
         val remotePref = { context: Context ->
             RemotePreferences(context, SharedPref.PKG, SharedPref.NAME, true)
-        }
-        val batteryScalePref = { context: Context ->
-            val sharedPref = remotePref(context)
-            sharedPref.getFloat(
-                SharedPref.BATTERY_ICON_SCALE_KEY,
-                SharedPref.BATTERY_ICON_SCALE_DEFAULT
-            )
         }
         val timeZonePref = { context: Context ->
             if (context.packageName.equals("com.android.deskclock")) {
@@ -84,39 +69,11 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         loadApp(name = "com.android.launcher3") {
-            "com.android.launcher3.touch.WorkspaceTouchListener".toClassOrNull()?.apply {
-                method {
-                    name = "onDoubleTap"
-                    superClass()
-                }.hook {
-                    after {
-                        Shell.cmd("input keyevent 223").exec()
-                    }
-                }
-            }
             newTimeZone()
             newCalendar()
         }
 
         loadApp(name = "com.android.systemui") {
-            "com.android.systemui.battery.BatteryMeterView".toClassOrNull()?.apply {
-                method {
-                    name = "scaleBatteryMeterViews"
-                }.hook {
-                    after {
-                        val scale = batteryScalePref(appContext!!)
-                        val ref = instance::class.java
-                        val icon = ref.getDeclaredField("mBatteryIconView")
-                        icon.isAccessible = true
-                        val battery = icon.get(instance) as ImageView
-                        if (batteryWidth == 0) batteryWidth = battery.layoutParams.width
-                        if (batteryHeight == 0) batteryHeight = battery.layoutParams.height
-                        val width = Math.round(batteryWidth * scale)
-                        val height = Math.round(batteryHeight * scale)
-                        battery.layoutParams = LinearLayout.LayoutParams(width, height)
-                    }
-                }
-            }
             "com.android.systemui.statusbar.policy.Clock".toClassOrNull()?.apply {
                 method {
                     name = "updateClock"
