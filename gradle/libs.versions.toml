@@ -1,11 +1,11 @@
 [versions]
-agp = "8.11.1"
-kotlin = "2.1.20"
-ksp = "2.1.20-2.0.1"
-coreKtx = "1.16.0"
-lifecycleRuntimeKtx = "2.9.0"
-activityCompose = "1.10.1"
-composeBom = "2025.05.01"
+agp = "9.3.1"
+kotlin = "2.4.10"
+ksp = "2.3.11"
+coreKtx = "1.19.0"
+lifecycleRuntimeKtx = "2.11.0"
+activityCompose = "1.13.0"
+composeBom = "2026.08.00"
 remotepreferences = "0.8"
 xposedApi = "82"
 yukihookapiApi = "1.2.1"
@@ -21,6 +21,7 @@ androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
 crossbowffs-remotepreferences = { group = "com.crossbowffs.remotepreferences", name = "remotepreferences", version.ref = "remotepreferences" }
 robv-xposed-api = { module = "de.robv.android.xposed:api", version.ref = "xposedApi" }
 highcapable-yukihookapi-api = { module = "com.highcapable.yukihookapi:api", version.ref = "yukihookapiApi" }
@@ -29,6 +30,5 @@ topjohnwu-libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
