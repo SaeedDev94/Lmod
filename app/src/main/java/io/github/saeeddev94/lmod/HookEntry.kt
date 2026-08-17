@@ -74,6 +74,17 @@ class HookEntry : IYukiHookXposedInit {
                 }
             }
         }
+        val hookWebView = {
+            "android.webkit.WebView".toClassOrNull()?.resolve()?.apply {
+                firstMethodOrNull {
+                    name = "getSettings"
+                }?.hook {
+                    after {
+                        applyDesktopUserAgentData(result as WebSettings)
+                    }
+                }
+            }
+        }
 
         loadApp(name = "com.android.deskclock") {
             newTimeZone()
@@ -122,15 +133,11 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         loadApp(name = "org.lineageos.jelly") {
-            "android.webkit.WebView".toClassOrNull()?.resolve()?.apply {
-                firstMethodOrNull {
-                    name = "getSettings"
-                }?.hook {
-                    after {
-                        applyDesktopUserAgentData(result as WebSettings)
-                    }
-                }
-            }
+            hookWebView()
+        }
+
+        loadApp(name = "org.lineageos.jelly.dev") {
+            hookWebView()
         }
     }
 
