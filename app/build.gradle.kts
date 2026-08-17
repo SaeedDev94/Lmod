@@ -12,8 +12,8 @@ android {
         applicationId = "io.github.saeeddev94.lmod"
         minSdk = 26
         targetSdk = 37
-        versionCode = 300
-        versionName = "6.4.1"
+        versionCode = 314
+        versionName = "6.4.4"
 
         vectorDrawables {
             useSupportLibrary = true
@@ -62,6 +62,10 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.core)
+    implementation(platform(libs.kavaref.bom))
+    implementation(libs.kavaref.core)
+    implementation(libs.kavaref.android)
+    implementation(libs.kavaref.extension)
     implementation(libs.highcapable.yukihookapi.api)
     ksp(libs.highcapable.yukihookapi.ksp)
     implementation(libs.topjohnwu.libsu.core)

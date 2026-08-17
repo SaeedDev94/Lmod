@@ -5,16 +5,17 @@ import android.content.Intent
 import android.provider.Telephony
 import android.widget.TextView
 import com.crossbowffs.remotepreferences.RemotePreferences
+import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.configs
 import com.highcapable.yukihookapi.hook.factory.encase
-import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.TimeZone
+import com.highcapable.kavaref.extension.classOf
 
 @InjectYukiHookWithXposed
 class HookEntry : IYukiHookXposedInit {
@@ -43,10 +44,10 @@ class HookEntry : IYukiHookXposedInit {
             }
         }
         val newTimeZone = {
-            "java.util.TimeZone".toClassOrNull()?.apply {
-                method {
+            "java.util.TimeZone".toClassOrNull()?.resolve()?.apply {
+                firstMethodOrNull {
                     name = "getDefault"
-                }.hook {
+                }?.hook {
                     replaceAny {
                         val timeZoneId = timeZonePref(appContext!!)
                         TimeZone.getTimeZone(timeZoneId)
@@ -55,10 +56,10 @@ class HookEntry : IYukiHookXposedInit {
             }
         }
         val newCalendar = {
-            "java.util.Calendar".toClassOrNull()?.apply {
-                method {
+            "java.util.Calendar".toClassOrNull()?.resolve()?.apply {
+                firstMethodOrNull {
                     name = "getInstance"
-                }.hook {
+                }?.hook {
                     after {
                         val timeZoneId = timeZonePref(appContext!!)
                         val calendar = result as Calendar
@@ -79,10 +80,10 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         loadApp(name = "com.android.systemui") {
-            "com.android.systemui.statusbar.policy.Clock".toClassOrNull()?.apply {
-                method {
+            "com.android.systemui.statusbar.policy.Clock".toClassOrNull()?.resolve()?.apply {
+                firstMethodOrNull {
                     name = "updateClock"
-                }.hook {
+                }?.hook {
                     after {
                         val timeZoneId = timeZonePref(appContext!!)
                         val statusBarClock = instance as TextView
@@ -96,11 +97,11 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         loadApp(name = "org.fossify.messages") {
-            "org.fossify.messages.receivers.SmsReceiver".toClassOrNull()?.apply {
-                method {
+            "org.fossify.messages.receivers.SmsReceiver".toClassOrNull()?.resolve()?.apply {
+                firstMethodOrNull {
                     name = "onReceive"
-                    param(Context::class.java, Intent::class.java)
-                }.hook {
+                    parameters(classOf<Context>(), classOf<Intent>())
+                }?.hook {
                     after {
                         val context = args[0] as Context
                         val intent = args[1] as Intent
