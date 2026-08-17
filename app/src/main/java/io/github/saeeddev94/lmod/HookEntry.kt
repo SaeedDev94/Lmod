@@ -68,6 +68,11 @@ class HookEntry : IYukiHookXposedInit {
             }
         }
 
+        loadApp(name = "com.android.deskclock") {
+            newTimeZone()
+            newCalendar()
+        }
+
         loadApp(name = "com.android.launcher3") {
             newTimeZone()
             newCalendar()
@@ -86,11 +91,6 @@ class HookEntry : IYukiHookXposedInit {
                     }
                 }
             }
-            newTimeZone()
-            newCalendar()
-        }
-
-        loadApp(name = "com.android.deskclock") {
             newTimeZone()
             newCalendar()
         }

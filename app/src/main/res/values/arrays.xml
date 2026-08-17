@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="xposed_scope">
+        <item>com.android.deskclock</item>
         <item>com.android.launcher3</item>
         <item>com.android.systemui</item>
-        <item>com.android.deskclock</item>
         <item>org.fossify.messages</item>
     </string-array>
 </resources>
