@@ -12,7 +12,7 @@ android {
         applicationId = "io.github.saeeddev94.lmod"
         minSdk = 26
         targetSdk = 37
-        versionCode = 314
+        versionCode = 388
         versionName = "6.4.4"
 
         vectorDrawables {
@@ -70,4 +70,5 @@ dependencies {
     ksp(libs.highcapable.yukihookapi.ksp)
     implementation(libs.topjohnwu.libsu.core)
     implementation(libs.crossbowffs.remotepreferences)
+    implementation(libs.androidx.webkit)
 }
