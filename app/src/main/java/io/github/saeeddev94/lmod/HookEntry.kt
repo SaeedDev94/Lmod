@@ -5,9 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
 import android.webkit.WebSettings
+import android.webkit.WebView
 import android.widget.TextView
 import androidx.webkit.UserAgentMetadata
 import androidx.webkit.WebSettingsCompat
+import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import com.crossbowffs.remotepreferences.RemotePreferences
 import com.highcapable.kavaref.KavaRef.Companion.resolve
@@ -81,6 +83,7 @@ class HookEntry : IYukiHookXposedInit {
                 }?.hook {
                     after {
                         applyDesktopUserAgentData(result as WebSettings)
+                        applyDesktopNavigatorPlatform(instance as WebView)
                     }
                 }
             }
@@ -162,5 +165,20 @@ class HookEntry : IYukiHookXposedInit {
             builder.setFormFactors(listOf(UserAgentMetadata.FORM_FACTOR_DESKTOP))
         }
         WebSettingsCompat.setUserAgentMetadata(settings, builder.build())
+    }
+
+    @SuppressLint("RequiresFeature")
+    private fun applyDesktopNavigatorPlatform(webView: WebView) {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
+            YLog.error(msg = "DOCUMENT_START_SCRIPT feature not supported, skipping")
+            return
+        }
+        val script = """
+            Object.defineProperty(Object.getPrototypeOf(navigator), 'platform', {
+                get: function () { return 'Linux x86_64'; },
+                configurable: true
+            });
+        """.trimIndent()
+        WebViewCompat.addDocumentStartJavaScript(webView, script, setOf("*"))
     }
 }
