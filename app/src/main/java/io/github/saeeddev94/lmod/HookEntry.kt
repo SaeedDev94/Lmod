@@ -165,6 +165,10 @@ class HookEntry : IYukiHookXposedInit {
             builder.setFormFactors(listOf(UserAgentMetadata.FORM_FACTOR_DESKTOP))
         }
         WebSettingsCompat.setUserAgentMetadata(settings, builder.build())
+        settings.apply {
+            val regex = Regex("""\sAndroid\s[0-9]+(?:\.[0-9]+)*;""")
+            userAgentString = userAgentString.replace(regex, "")
+        }
     }
 
     @SuppressLint("RequiresFeature")
