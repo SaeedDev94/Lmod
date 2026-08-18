@@ -7,5 +7,6 @@
         <item>org.fossify.messages</item>
         <item>org.lineageos.jelly</item>
         <item>org.lineageos.jelly.dev</item>
+        <item>app.horizon</item>
     </string-array>
 </resources>

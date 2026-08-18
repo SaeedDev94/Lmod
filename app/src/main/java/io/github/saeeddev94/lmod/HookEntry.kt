@@ -142,6 +142,10 @@ class HookEntry : IYukiHookXposedInit {
         loadApp(name = "org.lineageos.jelly.dev") {
             hookWebView()
         }
+
+        loadApp(name = "app.horizon") {
+            hookWebView()
+        }
     }
 
     @SuppressLint("RequiresFeature")
