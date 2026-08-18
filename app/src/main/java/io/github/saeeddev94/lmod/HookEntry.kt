@@ -83,7 +83,7 @@ class HookEntry : IYukiHookXposedInit {
                 }?.hook {
                     after {
                         applyDesktopUserAgentData(result as WebSettings)
-                        applyDesktopNavigatorPlatform(instance as WebView)
+                        applyDesktopNavigatorProps(instance as WebView)
                     }
                 }
             }
@@ -168,7 +168,7 @@ class HookEntry : IYukiHookXposedInit {
     }
 
     @SuppressLint("RequiresFeature")
-    private fun applyDesktopNavigatorPlatform(webView: WebView) {
+    private fun applyDesktopNavigatorProps(webView: WebView) {
         if (!WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
             YLog.error(msg = "DOCUMENT_START_SCRIPT feature not supported, skipping")
             return
@@ -176,7 +176,11 @@ class HookEntry : IYukiHookXposedInit {
         val script = """
             Object.defineProperty(Object.getPrototypeOf(navigator), 'platform', {
                 get: function () { return 'Linux x86_64'; },
-                configurable: true
+                configurable: true,
+            });
+            Object.defineProperty(Object.getPrototypeOf(navigator), 'maxTouchPoints', {
+                get: function () { return 0; },
+                configurable: true,
             });
         """.trimIndent()
         WebViewCompat.addDocumentStartJavaScript(webView, script, setOf("*"))
