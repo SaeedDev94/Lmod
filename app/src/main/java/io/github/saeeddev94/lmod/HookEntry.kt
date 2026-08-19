@@ -83,7 +83,7 @@ class HookEntry : IYukiHookXposedInit {
                 }?.hook {
                     after {
                         applyDesktopUserAgentData(result as WebSettings)
-                        applyDesktopNavigatorProps(instance as WebView)
+                        applyScripts(instance as WebView)
                     }
                 }
             }
@@ -176,21 +176,25 @@ class HookEntry : IYukiHookXposedInit {
     }
 
     @SuppressLint("RequiresFeature")
-    private fun applyDesktopNavigatorProps(webView: WebView) {
+    private fun applyScripts(webView: WebView) {
         if (!WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
             YLog.error(msg = "DOCUMENT_START_SCRIPT feature not supported, skipping")
             return
         }
-        val script = """
-            Object.defineProperty(Object.getPrototypeOf(navigator), 'platform', {
-                get: function () { return 'Linux x86_64'; },
-                configurable: true,
-            });
-            Object.defineProperty(Object.getPrototypeOf(navigator), 'maxTouchPoints', {
-                get: function () { return 0; },
-                configurable: true,
-            });
-        """.trimIndent()
+        val script = listOf(
+            desktopNavigatorScript(),
+        ).joinToString("\n")
         WebViewCompat.addDocumentStartJavaScript(webView, script, setOf("*"))
     }
+
+    private fun desktopNavigatorScript() = """
+        Object.defineProperty(Object.getPrototypeOf(navigator), 'platform', {
+            get: function () { return 'Linux x86_64'; },
+            configurable: true,
+        });
+        Object.defineProperty(Object.getPrototypeOf(navigator), 'maxTouchPoints', {
+            get: function () { return 0; },
+            configurable: true,
+        });
+    """.trimIndent()
 }
