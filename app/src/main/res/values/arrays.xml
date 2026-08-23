@@ -3,8 +3,9 @@
     <string-array name="xposed_scope">
         <item>com.android.deskclock</item>
         <item>com.android.launcher3</item>
+        <item>com.android.messaging</item>
+        <item>com.android.messaging.debug</item>
         <item>com.android.systemui</item>
-        <item>org.fossify.messages</item>
         <item>org.lineageos.jelly</item>
         <item>app.horizon</item>
     </string-array>

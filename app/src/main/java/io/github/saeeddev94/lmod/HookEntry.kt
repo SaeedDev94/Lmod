@@ -76,6 +76,24 @@ class HookEntry : IYukiHookXposedInit {
                 }
             }
         }
+        val hookSms = {
+            "com.android.messaging.receiver.SmsDeliverReceiver".toClassOrNull()?.resolve()?.apply {
+                firstMethodOrNull {
+                    name = "onReceive"
+                    parameters(classOf<Context>(), classOf<Intent>())
+                }?.hook {
+                    after {
+                        val context = args[0] as Context
+                        val intent = args[1] as Intent
+                        val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
+                        var text = ""
+                        messages.forEach { text += it.messageBody }
+                        val otp = OtpExtractor.extract(text) ?: return@after
+                        Clipboard.copy(context, otp)
+                    }
+                }
+            }
+        }
         val hookWebView = {
             "android.webkit.WebView".toClassOrNull()?.resolve()?.apply {
                 firstMethodOrNull {
@@ -116,23 +134,12 @@ class HookEntry : IYukiHookXposedInit {
             newCalendar()
         }
 
-        loadApp(name = "org.fossify.messages") {
-            "org.fossify.messages.receivers.SmsReceiver".toClassOrNull()?.resolve()?.apply {
-                firstMethodOrNull {
-                    name = "onReceive"
-                    parameters(classOf<Context>(), classOf<Intent>())
-                }?.hook {
-                    after {
-                        val context = args[0] as Context
-                        val intent = args[1] as Intent
-                        val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
-                        var text = ""
-                        messages.forEach { text += it.messageBody }
-                        val otp = OtpExtractor.extract(text) ?: return@after
-                        Clipboard.copy(context, otp)
-                    }
-                }
-            }
+        loadApp(name = "com.android.messaging") {
+            hookSms()
+        }
+
+        loadApp(name = "com.android.messaging.debug") {
+            hookSms()
         }
 
         loadApp(name = "org.lineageos.jelly") {
