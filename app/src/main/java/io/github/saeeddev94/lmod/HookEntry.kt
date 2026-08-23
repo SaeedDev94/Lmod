@@ -139,10 +139,6 @@ class HookEntry : IYukiHookXposedInit {
             hookWebView()
         }
 
-        loadApp(name = "org.lineageos.jelly.dev") {
-            hookWebView()
-        }
-
         loadApp(name = "app.horizon") {
             hookWebView()
         }
