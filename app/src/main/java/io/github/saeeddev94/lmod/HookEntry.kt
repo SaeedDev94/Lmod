@@ -76,8 +76,11 @@ class HookEntry : IYukiHookXposedInit {
                 }
             }
         }
-        val hookSms = {
-            "com.android.messaging.receiver.SmsDeliverReceiver".toClassOrNull()?.resolve()?.apply {
+        val hookSms = { classHook: String? ->
+            val targetHook =
+                classHook ?:
+                "com.android.messaging.receiver.SmsDeliverReceiver"
+            targetHook.toClassOrNull()?.resolve()?.apply {
                 firstMethodOrNull {
                     name = "onReceive"
                     parameters(classOf<Context>(), classOf<Intent>())
@@ -135,11 +138,15 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         loadApp(name = "com.android.messaging") {
-            hookSms()
+            hookSms(null)
         }
 
         loadApp(name = "com.android.messaging.debug") {
-            hookSms()
+            hookSms(null)
+        }
+
+        loadApp(name = "com.miss.ga") {
+            hookSms("com.miss.ga.receiver.SmsReceiver")
         }
 
         loadApp(name = "org.lineageos.jelly") {

@@ -8,5 +8,6 @@
         <item>com.android.systemui</item>
         <item>org.lineageos.jelly</item>
         <item>app.horizon</item>
+        <item>com.miss.ga</item>
     </string-array>
 </resources>
