@@ -76,10 +76,11 @@ class HookEntry : IYukiHookXposedInit {
                 }
             }
         }
-        val hookSms = { classHook: String? ->
-            val targetHook =
-                classHook ?:
-                "com.android.messaging.receiver.SmsDeliverReceiver"
+        val hookSms = { aosp: Boolean ->
+            val targetHook = when (aosp) {
+                true -> "com.android.messaging.receiver.SmsDeliverReceiver"
+                false -> "com.miss.ga.receiver.SmsReceiver"
+            }
             targetHook.toClassOrNull()?.resolve()?.apply {
                 firstMethodOrNull {
                     name = "onReceive"
@@ -138,15 +139,19 @@ class HookEntry : IYukiHookXposedInit {
         }
 
         loadApp(name = "com.android.messaging") {
-            hookSms(null)
+            hookSms(true)
         }
 
         loadApp(name = "com.android.messaging.debug") {
-            hookSms(null)
+            hookSms(true)
         }
 
         loadApp(name = "com.miss.ga") {
-            hookSms("com.miss.ga.receiver.SmsReceiver")
+            hookSms(false)
+        }
+
+        loadApp(name = "com.miss.ga.dev") {
+            hookSms(false)
         }
 
         loadApp(name = "org.lineageos.jelly") {

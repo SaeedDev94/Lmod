@@ -9,5 +9,6 @@
         <item>org.lineageos.jelly</item>
         <item>app.horizon</item>
         <item>com.miss.ga</item>
+        <item>com.miss.ga.dev</item>
     </string-array>
 </resources>
