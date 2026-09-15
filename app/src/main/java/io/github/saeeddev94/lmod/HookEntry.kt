@@ -184,10 +184,6 @@ class HookEntry : IYukiHookXposedInit {
             builder.setFormFactors(listOf(UserAgentMetadata.FORM_FACTOR_DESKTOP))
         }
         WebSettingsCompat.setUserAgentMetadata(settings, builder.build())
-        settings.apply {
-            val regex = Regex("""\sAndroid\s[0-9]+(?:\.[0-9]+)*;""")
-            userAgentString = userAgentString.replace(regex, "")
-        }
     }
 
     @SuppressLint("RequiresFeature")
@@ -196,19 +192,13 @@ class HookEntry : IYukiHookXposedInit {
             YLog.error(msg = "DOCUMENT_START_SCRIPT feature not supported, skipping")
             return
         }
-        val script = listOf(
-            desktopNavigatorScript(),
-        ).joinToString("\n")
+        val script = desktopNavigatorScript()
         WebViewCompat.addDocumentStartJavaScript(webView, script, setOf("*"))
     }
 
     private fun desktopNavigatorScript() = """
         Object.defineProperty(Object.getPrototypeOf(navigator), 'platform', {
             get: function () { return 'Linux x86_64'; },
-            configurable: true,
-        });
-        Object.defineProperty(Object.getPrototypeOf(navigator), 'maxTouchPoints', {
-            get: function () { return 0; },
             configurable: true,
         });
     """.trimIndent()
